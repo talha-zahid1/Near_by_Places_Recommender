@@ -4,6 +4,7 @@ import notfound from "./middleware/notfound.js";
 import errorHandler from "./middleware/errorhandler.js";
 import session from "express-session";
 import dotenv from "dotenv";
+import cors from 'cors';
 dotenv.config();
 const web= express();
 web.use(session({
@@ -15,6 +16,10 @@ web.use(session({
     }
 }));
 web.use(express.json());
+web.use(cors({
+    origin: 'http://localhost:5173', 
+    credentials: true 
+}));
 web.use('/',router);
 web.use(notfound);
 web.use(errorHandler);
