@@ -18,4 +18,5 @@ web.use(express.json());
 web.use('/',router);
 web.use(notfound);
 web.use(errorHandler);
-web.listen(3000,()=>console.log('Server is running at http://localhost:3000'));
+const portnumber=process.env.PORT||3000;
+web.listen(portnumber,"0.0.0.0",()=>console.log(`Server is running on port ${portnumber}`));
