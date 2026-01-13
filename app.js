@@ -1,0 +1,21 @@
+import express from "express";
+import router from "./routes/approutes.js";
+import notfound from "./middleware/notfound.js";
+import errorHandler from "./middleware/errorhandler.js";
+import session from "express-session";
+import dotenv from "dotenv";
+dotenv.config();
+const web= express();
+web.use(session({
+    secret:process.env.SECRETKEY,
+    resave:false,
+    saveUninitialized:false,
+    cookie:{
+        maxAge:1000*60*60
+    }
+}));
+web.use(express.json());
+web.use('/',router);
+web.use(notfound);
+web.use(errorHandler);
+web.listen(3000,()=>console.log('Server is running at http://localhost:3000'));
