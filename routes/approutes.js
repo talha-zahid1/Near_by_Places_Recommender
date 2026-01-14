@@ -1,5 +1,5 @@
 import express from "express";
-import { getdata,landingpage,register,login,home,renderlogin,renderrigister } from "../controller/appcontroller.js";
+import { getdata,landingpage,register,login,home,renderlogin,renderrigister,logout } from "../controller/appcontroller.js";
 import asyncHandler from "../middleware/asynchandler.js";
 import isAuthenticated from "../middleware/auth.js";
 const router=express.Router();
@@ -10,4 +10,5 @@ router.post('/login',asyncHandler(login));
 router.post('/register',asyncHandler(register));
 router.get('/API',asyncHandler(getdata));
 router.get('/home',asyncHandler(home));
+router.get('/logout',asyncHandler(logout));
 export default router;
