@@ -11,11 +11,12 @@ export async function getdata(req, res) {
     "park",
     "library",
   ];
-  let flag = allowedmood.includes(mood);
+  const cleanmode=mood?mood.trim().toLowerCase():"";
+  let flag = allowedmood.includes(cleanmode);
   if (!flag) {
     return res.status(400).json({ success: false, message: `Bad Input` });
   }
-  const rows = await fetch_data(lat, lng, mood);
+  const rows = await fetch_data(lat, lng, cleanmode);
   if (rows) {
     return res.status(200).json({ success: true, message: rows });
   } else {
@@ -24,15 +25,24 @@ export async function getdata(req, res) {
       .json({ success: false, message: `Something wrong Happened` });
   }
 }
+export async function checkpoint(req,res) {
+
+    if (req.session.userId &&req.session) {
+        return res.status(200).json({success:true,isLoggedIn:true,user: { name: "User", email: "" }});
+    }
+    return res.status(401).json({success:false,isLoggedIn:false});
+}
+export async function home(req, res) {
+  res.status(200).json({success:true,message:'Ready to render'});
+}
 export async function landingpage(req, res) {
-  console.log("Hi from landing Page");
-  return res.redirect("/home");
+  return res.status(200).json({success:true,message:"Render landing page"});
 }
 export async function renderlogin(req, res) {
-  res.send("Rendered Login Page ");
+  res.status(200).json({success:true,message:"Rendered Login Page "});
 }
 export async function renderrigister(req, res) {
-  res.send("Rendered Register ");
+  res.json({success:true,message:"Rendered Register "});
 }
 export async function logout(req, res) {
   req.session.destroy((err) => {
@@ -40,7 +50,7 @@ export async function logout(req, res) {
       return res.status(500).send("Error destroying session");
     }
     res.clearCookie("connect.sid");
-    res.send("Logged out");
+    res.status(200).json({success:true,message:"Logged out"});
   });
 }
 export async function register(req, res) {
@@ -52,25 +62,23 @@ export async function register(req, res) {
   }
   const user = await user_data(email);
   if (rows === null) {
-    return res.status(500).send(`Couldn't Enter the Data`);
+    return res.status(500).json({success:false,message:`Couldn't Enter the Data`});
   } else {
     req.session.userId = user.id;
-    res.status(200).json({ success: true, message: "User Has Registered" });
+    res.status(200).json({ success: true,user: { name: user.name, email: user.email },redirectTo:'/home'});
   }
 }
 export async function login(req, res) {
   const { email, password } = req.body;
   const user = await user_data(email);
   if (!user) {
-    return res.redirect("/register");
+    return res.status(404).json({success:false,message:'User Not FOund Please Register'});
   }
   const isMatch = await bcrypt.compare(password, user.password);
   if (!isMatch) {
-    return res.json({ success: false, message: `Invalid Password` });
+    return res.status(401).json({ success: false, message: `Invalid Password` });
   }
   req.session.userId = user.id;
-  return res.redirect("/home");
+  return res.status(200).json({success:true,user: { name: user.name, email: user.email },redirectTo:'/home'});
 }
-export async function home(req, res) {
-  res.render("home");
-}
+

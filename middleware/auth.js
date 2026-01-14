@@ -2,6 +2,6 @@ export default async function isAuthenticated(req,res,next) {
     if (req.session.userId) {
         next();
     } else {
-        res.redirect('/login');
+        res.status(401).json({ success: false, message: "Unauthorized" });
     }
 }
